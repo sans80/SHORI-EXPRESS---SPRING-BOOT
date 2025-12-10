@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Shori Express</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background: #007bff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .app-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .app-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .error-details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .auth-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .auth-links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .auth-links a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-placeholder">
+            SE
+        </div>
+        <h1 class="app-title">Error</h1>
+        <p class="app-subtitle">Ha ocurrido un problema</p>
+
+        <div class="alert alert-danger">
+            <h4>Error en la aplicación</h4>
+            <p th:if="${error}" th:text="${error}">Ha ocurrido un error inesperado.</p>
+            <p th:unless="${error}">Ha ocurrido un error inesperado. Por favor, inténtalo más tarde.</p>
+            
+            <!-- Mostrar detalles técnicos si están disponibles -->
+            <div th:if="${stackTrace}" class="error-details">
+                <strong>Detalles técnicos:</strong><br>
+                <span th:text="${stackTrace}"></span>
+            </div>
+        </div>
+
+        <div class="auth-links">
+            <a th:href="@{/auth/login}">Volver al inicio de sesión</a>
+            <a th:href="@{/auth/register}">Ir al registro</a>
+        </div>
+    </div>
+</body>
+</html>

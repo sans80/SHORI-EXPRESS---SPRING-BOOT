@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Producto - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="detail-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Detalle del Producto</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/productos}">← Volver a Productos</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Detalle del producto -->
+        <div class="detail-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h1 style="color: #333; margin: 0;" th:text="${producto.nombreProductoTerminado}"></h1>
+                <span
+                    style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+                    ID: [[${producto.idProductoTerminado}]]
+                </span>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">📝 Descripción</div>
+                    <div class="detail-value" th:text="${producto.descripcionProductoTerminado ?: 'Sin descripción'}">
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">📦 Cantidad</div>
+                    <div class="detail-value" th:text="${producto.cantidadProductoTerminado}"></div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">📊 Stock Disponible</div>
+                    <div class="detail-value">
+                        <span th:class="${producto.stockProductoTerminado > 0} ? 'status-active' : 'status-inactive'"
+                            th:text="${producto.stockProductoTerminado}"></span>
+                        <span th:if="${producto.stockProductoTerminado == 0}"
+                            style="color: #dc3545; font-weight: bold;"> (Agotado)</span>
+                        <span th:if="${producto.stockProductoTerminado > 0 and producto.stockProductoTerminado <= 5}"
+                            style="color: #ffc107; font-weight: bold;"> (Stock Bajo)</span>
+                        <span th:if="${producto.stockProductoTerminado > 5}" style="color: #28a745; font-weight: bold;">
+                            (Disponible)</span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">💰 Precio de Venta</div>
+                    <div class="detail-value" style="font-size: 20px; font-weight: bold; color: #dc3545;">
+                        $[[${#numbers.formatDecimal(producto.precioVentaProductoTerminado, 0, 'COMMA', 2, 'POINT')}]]
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descripción completa si existe -->
+            <div th:if="${producto.descripcionProductoTerminado != null and !#strings.isEmpty(producto.descripcionProductoTerminado)}"
+                style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h4 style="color: #333; margin-bottom: 15px;">📋 Descripción Completa</h4>
+                <p style="color: #666; line-height: 1.6; margin: 0;" th:text="${producto.descripcionProductoTerminado}">
+                </p>
+            </div>
+
+            <!-- Acciones -->
+            <div style="display: flex; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e1e5e9;">
+                <a th:href="@{/productos}" class="btn btn-secondary">
+                    ← Volver a la Lista
+                </a>
+                <div th:if="${session.usuarioLogueado != null and session.usuarioLogueado.rol.nombreRol == 'admin'}">
+                    <a th:href="@{/productos/editar/{id}(id=${producto.idProductoTerminado})}" class="btn btn-primary">
+                        ✏️ Editar Producto
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

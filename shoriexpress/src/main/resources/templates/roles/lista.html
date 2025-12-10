@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roles - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Roles</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/usuarios}">👥 Usuarios</a>
+                    <a th:href="@{/productos}">📦 Productos</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">🏷️ Roles del Sistema</h1>
+                <div>
+                    <a th:href="@{/roles/nuevo}" class="btn-add">➕ Nuevo Rol</a>
+                </div>
+            </div>
+
+            <!-- Tabla de roles -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Rol</th>
+                            <th>Usuarios Asignados</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="rol : ${roles}">
+                            <td th:text="${rol.idRol}"></td>
+                            <td>
+                                <span
+                                    style="background: #dc3545; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;"
+                                    th:text="${rol.nombreRol}"></span>
+                            </td>
+                            <td th:text="${rol.usuarios != null ? #lists.size(rol.usuarios) : 0}"></td>
+                            <td>
+                                <a th:href="@{/roles/editar/{id}(id=${rol.idRol})}" class="btn-edit">✏️ Editar</a>
+                                <form th:action="@{/roles/eliminar/{id}(id=${rol.idRol})}" method="post"
+                                    style="display: inline;"
+                                    onsubmit="return confirm('¿Está seguro de eliminar este rol? Esta acción no se puede deshacer.')">
+                                    <button type="submit" class="btn-delete"
+                                        th:disabled="${rol.nombreRol.toLowerCase() == 'admin' || rol.nombreRol.toLowerCase() == 'cliente'}">
+                                        🗑️ Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(roles)}">
+                            <td colspan="4" style="text-align: center; color: #666; padding: 30px;">
+                                🏷️ No se encontraron roles
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Información adicional -->
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                <h4 style="color: #333; margin-bottom: 15px;">ℹ️ Información sobre Roles</h4>
+                <ul style="color: #666; line-height: 1.6;">
+                    <li><strong>Admin:</strong> Acceso completo al sistema, puede gestionar usuarios, productos y roles.
+                    </li>
+                    <li><strong>Cliente:</strong> Acceso limitado, puede ver productos y gestionar su perfil.</li>
+                    <li>Los roles <strong>admin</strong> y <strong>cliente</strong> no se pueden eliminar por ser roles
+                        del sistema.</li>
+                    <li>Al eliminar un rol, asegúrese de que no tenga usuarios asignados.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

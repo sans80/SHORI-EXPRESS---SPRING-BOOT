@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .navbar img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #dc3545 0%, #000000 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            /* Gris oscuro */
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #666;
+            /* Gris medio */
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #c82333;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-info {
+            background-color: #f8f9fa;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-info:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        <img th:src="@{/img/SHORIp.png}" alt="Shori Express Logo">
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Mi Perfil</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">← Volver al Dashboard</a>
+                    <a th:href="@{/auth/logout}" style="color: #dc3545;">Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <div th:if="${mensaje}" class="alert alert-success"
+            th:classappend="${tipoMensaje == 'info'} ? 'alert-info' : ''">
+            <span th:text="${mensaje}"></span>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <span
+                    th:text="${#strings.substring(usuario.primerNombreUsuario, 0, 1) + #strings.substring(usuario.apellidoUsuario, 0, 1)}"></span>
+            </div>
+            <h1 th:text="${usuario.primerNombreUsuario + ' ' + usuario.apellidoUsuario}"></h1>
+            <p style="opacity: 0.9;" th:text="'@' + ${usuario.nombreUsuario}"></p>
+            <p style="opacity: 0.8;">
+                <span th:text="${usuario.rol.nombreRol}"
+                    style="text-transform: capitalize; background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px;"></span>
+            </p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;">📋 Información Personal</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Nombre Completo</div>
+                    <div class="info-value" th:text="${usuario.primerNombreUsuario + ' ' + usuario.apellidoUsuario}">
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Nombre de Usuario</div>
+                    <div class="info-value" th:text="${usuario.nombreUsuario}"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Correo Electrónico</div>
+                    <div class="info-value" th:text="${usuario.correoUsuario}"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Tipo de Documento</div>
+                    <div class="info-value" th:text="${usuario.tipoDocumentoUsuario}"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Número de Documento</div>
+                    <div class="info-value" th:text="${usuario.documentoUsuario}"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Teléfono</div>
+                    <div class="info-value" th:text="${usuario.telefonoUsuario ?: 'No especificado'}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;">📍 Información de Contacto</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Dirección</div>
+                    <div class="info-value" th:text="${usuario.direccionUsuario}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;">⚙️ Información de la Cuenta</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Rol</div>
+                    <div class="info-value" th:text="${usuario.rol.nombreRol}" style="text-transform: capitalize;">
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Estado</div>
+                    <div class="info-value" th:text="${usuario.estadoUsuario}"
+                        th:style="${usuario.estadoUsuario.name() == 'activo'} ? 'color: #28a745; font-weight: bold;' : 'color: #dc3545; font-weight: bold;'"
+                        style="text-transform: capitalize;"></div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Fecha de Registro</div>
+                    <div class="info-value"
+                        th:text="${#temporals.format(usuario.fechaRegistroUsuario, 'dd/MM/yyyy HH:mm')}"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a th:href="@{/usuarios/editar-perfil}" class="btn btn-primary" style="background: #dc3545;">
+                ✏️ Editar Perfil
+            </a>
+            <a th:href="@{/usuarios/cambiar-contraseña}" class="btn btn-secondary">
+                🔒 Cambiar Contraseña
+            </a>
+            <a th:href="@{/dashboard}" class="btn btn-info">
+                🏠 Ir al Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>

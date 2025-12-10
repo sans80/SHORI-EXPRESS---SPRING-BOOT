@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;"
+                        th:text="${producto.idProductoTerminado != null ? 'Editar Producto' : 'Nuevo Producto'}"></h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/productos}">← Volver a Productos</a>
+                </div>
+            </div>
+        </nav>
+
+
+
+        <!-- Formulario -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;"
+                th:text="${producto.idProductoTerminado != null ? '✏️ Editar Producto' : '➕ Crear Nuevo Producto'}">
+            </h3>
+
+            <form
+                th:action="${producto.idProductoTerminado != null ? '/productos/editar/' + producto.idProductoTerminado : '/productos/nuevo'}"
+                th:object="${producto}" method="post">
+
+                <!-- Mensajes de error -->
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombreProductoTerminado" class="form-label">Nombre del Producto *</label>
+                    <input type="text" id="nombreProductoTerminado" th:field="*{nombreProductoTerminado}"
+                        class="form-control"
+                        th:classappend="${#fields.hasErrors('nombreProductoTerminado')} ? 'error' : ''"
+                        placeholder="Ej: Hamburguesa Clásica" required>
+                    <span th:if="${#fields.hasErrors('nombreProductoTerminado')}" th:errors="*{nombreProductoTerminado}"
+                        class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcionProductoTerminado" class="form-label">Descripción</label>
+                    <textarea id="descripcionProductoTerminado" th:field="*{descripcionProductoTerminado}"
+                        class="form-control" rows="3" placeholder="Descripción detallada del producto..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="cantidadProductoTerminado" class="form-label">Cantidad *</label>
+                        <input type="number" id="cantidadProductoTerminado" th:field="*{cantidadProductoTerminado}"
+                            class="form-control"
+                            th:classappend="${#fields.hasErrors('cantidadProductoTerminado')} ? 'error' : ''" min="0"
+                            required>
+                        <span th:if="${#fields.hasErrors('cantidadProductoTerminado')}"
+                            th:errors="*{cantidadProductoTerminado}" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stockProductoTerminado" class="form-label">Stock Disponible</label>
+                        <input type="number" id="stockProductoTerminado" th:field="*{stockProductoTerminado}"
+                            class="form-control" min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="precioVentaProductoTerminado" class="form-label">Precio de Venta *</label>
+                    <input type="number" id="precioVentaProductoTerminado" th:field="*{precioVentaProductoTerminado}"
+                        class="form-control"
+                        th:classappend="${#fields.hasErrors('precioVentaProductoTerminado')} ? 'error' : ''" step="0.01"
+                        min="0.01" placeholder="0.00" required>
+                    <span th:if="${#fields.hasErrors('precioVentaProductoTerminado')}"
+                        th:errors="*{precioVentaProductoTerminado}" class="error-message"></span>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span
+                            th:text="${producto.idProductoTerminado != null ? '💾 Actualizar Producto' : '➕ Crear Producto'}"></span>
+                    </button>
+                    <a th:href="@{/productos}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

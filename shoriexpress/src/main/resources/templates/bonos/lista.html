@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonos - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Bonos</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/usuarios}">👥 Usuarios</a>
+                    <a th:href="@{/redenciones}">🎁 Redenciones</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">⭐ Bonos de Clientes</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/bonos/nuevo}" class="btn-add">➕ Nuevo Bono</a>
+                </div>
+            </div>
+
+            <!-- Tabla de bonos -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Puntos Acumulados</th>
+                            <th>Puntos Necesarios</th>
+                            <th>Progreso</th>
+                            <th>Estado</th>
+                            <th>Última Actualización</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="bono : ${bonos}">
+                            <td th:text="${bono.idBono}"></td>
+                            <td th:text="${bono.usuario.nombreUsuario}"></td>
+                            <td th:text="${bono.puntosAcumuladosBono}"></td>
+                            <td th:text="${bono.puntosNecesariosBono}"></td>
+                            <td>
+                                <div style="background: #e9ecef; border-radius: 10px; height: 20px; overflow: hidden;">
+                                    <div
+                                        th:style="'width: ' + ${(bono.puntosAcumuladosBono * 100.0 / bono.puntosNecesariosBono) > 100 ? 100 : (bono.puntosAcumuladosBono * 100.0 / bono.puntosNecesariosBono)} + '%; background: linear-gradient(45deg, #dc3545, #000000); height: 100%; transition: width 0.3s;'">
+                                    </div>
+                                </div>
+                                <small
+                                    th:text="${#numbers.formatDecimal((bono.puntosAcumuladosBono * 100.0 / bono.puntosNecesariosBono), 0, 0)} + '%'"></small>
+                            </td>
+                            <td>
+                                <span th:class="${bono.estadoBono.toString() == 'disponible'} ? 'status-active' : 
+                                               (${bono.estadoBono.toString() == 'redimido'} ? '' : 'status-inactive')"
+                                    th:text="${bono.estadoBono}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(bono.fechaActualizacionBono, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/bonos/editar/{id}(id=${bono.idBono})}" class="btn-edit">✏️ Editar</a>
+                                    <form th:action="@{/bonos/eliminar/{id}(id=${bono.idBono})}" method="post"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar este bono?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(bonos)}">
+                            <td colspan="8" style="text-align: center; color: #666; padding: 30px;">
+                                ⭐ No se encontraron bonos
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

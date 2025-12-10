@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entradas de Inventario - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Entradas de Inventario</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/materias-primas}">🥬 Materias Primas</a>
+                    <a th:href="@{/productos}">📦 Productos</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">📥 Entradas de Inventario</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/entradas-inventario/nuevo}" class="btn-add">➕ Nueva Entrada</a>
+                </div>
+            </div>
+
+            <!-- Tabla de entradas -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha</th>
+                            <th>Materia Prima</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unit.</th>
+                            <th>Total</th>
+                            <th>Tipo</th>
+                            <th>Usuario</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entrada : ${entradas}">
+                            <td th:text="${entrada.idEntrada}"></td>
+                            <td th:text="${#temporals.format(entrada.fechaEntrada, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="${entrada.materiaPrima.nombreMateriaPrima}"></td>
+                            <td th:text="${entrada.cantidadEntrada}"></td>
+                            <td
+                                th:text="'$' + ${#numbers.formatDecimal(entrada.precioUnitario, 0, 'COMMA', 2, 'POINT')}">
+                            </td>
+                            <td
+                                th:text="'$' + ${#numbers.formatDecimal(entrada.cantidadEntrada * entrada.precioUnitario, 0, 'COMMA', 2, 'POINT')}">
+                            </td>
+                            <td>
+                                <span
+                                    th:class="${entrada.tipoEntrada.toString() == 'Entrada'} ? 'status-active' : 'status-inactive'"
+                                    th:text="${entrada.tipoEntrada}"></span>
+                            </td>
+                            <td th:text="${entrada.usuario.nombreUsuario}"></td>
+                            <td>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/entradas-inventario/editar/{id}(id=${entrada.idEntrada})}"
+                                        class="btn-edit">✏️ Editar</a>
+                                    <form th:action="@{/entradas-inventario/eliminar/{id}(id=${entrada.idEntrada})}"
+                                        method="post" style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar esta entrada?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(entradas)}">
+                            <td colspan="9" style="text-align: center; color: #666; padding: 30px;">
+                                📥 No se encontraron entradas de inventario
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de Productos - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Recetas de Productos</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/productos}">📦 Productos</a>
+                    <a th:href="@{/materias-primas}">🥬 Materias Primas</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">📝 Recetas de Productos (Materias Primas)</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/detalles-producto-final/nuevo}" class="btn-add">➕ Nuevo Detalle</a>
+                </div>
+            </div>
+
+            <!-- Tabla de detalles -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Producto</th>
+                            <th>Materia Prima</th>
+                            <th>Cantidad</th>
+                            <th>Unidad</th>
+                            <th>Observaciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detalle : ${detalles}">
+                            <td th:text="${detalle.idDetalleProductoFinal}"></td>
+                            <td><strong th:text="${detalle.productoTerminado.nombreProductoTerminado}"></strong></td>
+                            <td th:text="${detalle.materiaPrima.nombreMateriaPrima}"></td>
+                            <td th:text="${detalle.cantidadUtilizada}"></td>
+                            <td th:text="${detalle.unidadMedidaDeta}"></td>
+                            <td th:text="${detalle.observacionesDetalle != null ? detalle.observacionesDetalle : '-'}">
+                            </td>
+                            <td>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/detalles-producto-final/editar/{id}(id=${detalle.idDetalleProductoFinal})}"
+                                        class="btn-edit">✏️ Editar</a>
+                                    <form
+                                        th:action="@{/detalles-producto-final/eliminar/{id}(id=${detalle.idDetalleProductoFinal})}"
+                                        method="post" style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar este detalle?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detalles)}">
+                            <td colspan="7" style="text-align: center; color: #666; padding: 30px;">
+                                📝 No se encontraron detalles de productos
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

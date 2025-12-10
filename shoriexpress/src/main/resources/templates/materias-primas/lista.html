@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materias Primas - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Materias Primas</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/productos}">📦 Productos</a>
+                    <a th:href="@{/entradas-inventario}">📥 Entradas</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">🥬 Materias Primas</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/materias-primas/nuevo}" class="btn-add">➕ Nueva Materia Prima</a>
+                </div>
+            </div>
+
+            <!-- Formulario de búsqueda -->
+            <div class="search-form">
+                <h4 style="margin-bottom: 15px;">🔍 Buscar Materias Primas</h4>
+                <form th:action="@{/materias-primas/buscar}" method="get">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                        <div class="form-group">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" name="nombre" th:value="${nombre}" class="form-control"
+                                placeholder="Buscar por nombre...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Categoría</label>
+                            <select name="categoria" class="form-select">
+                                <option value="">Todas</option>
+                                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"
+                                    th:selected="${cat == categoria}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select name="estado" class="form-select">
+                                <option value="">Todos</option>
+                                <option value="disponible" th:selected="${estado == 'disponible'}">Disponible</option>
+                                <option value="agotada" th:selected="${estado == 'agotada'}">Agotada</option>
+                                <option value="caducada" th:selected="${estado == 'caducada'}">Caducada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn-search">🔍 Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabla de materias primas -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Unidad</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Vencimiento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="materia : ${materiasPrimas}">
+                            <td th:text="${materia.idMateriaPrima}"></td>
+                            <td th:text="${materia.nombreMateriaPrima}"></td>
+                            <td th:text="${materia.categoriaMateriaPrima}"></td>
+                            <td th:text="${materia.unidadMedidaMateriaPrima}"></td>
+                            <td
+                                th:text="'$' + ${#numbers.formatDecimal(materia.precioMateriaPrima, 0, 'COMMA', 2, 'POINT')}">
+                            </td>
+                            <td>
+                                <span th:class="${materia.stockMateriaPrima > 10} ? 'status-active' : 'status-inactive'"
+                                    th:text="${materia.stockMateriaPrima}"></span>
+                            </td>
+                            <td>
+                                <span
+                                    th:class="${materia.estadoMateriaPrima.toString() == 'disponible'} ? 'status-active' : 'status-inactive'"
+                                    th:text="${materia.estadoMateriaPrima}"></span>
+                            </td>
+                            <td th:text="${#temporals.format(materia.fechaVencimientoMateriaPrima, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/materias-primas/editar/{id}(id=${materia.idMateriaPrima})}"
+                                        class="btn-edit">✏️ Editar</a>
+                                    <form th:action="@{/materias-primas/eliminar/{id}(id=${materia.idMateriaPrima})}"
+                                        method="post" style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar esta materia prima?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(materiasPrimas)}">
+                            <td colspan="9" style="text-align: center; color: #666; padding: 30px;">
+                                🥬 No se encontraron materias primas
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

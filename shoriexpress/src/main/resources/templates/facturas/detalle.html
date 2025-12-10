@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Factura - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .invoice-header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .invoice-details {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Detalle de Factura</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/facturas}">← Volver a Facturas</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Encabezado de Factura -->
+        <div class="invoice-header">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 30px;">
+                <div>
+                    <h1 style="color: #dc3545; margin: 0;">SHORI EXPRESS</h1>
+                    <p style="color: #666; margin: 5px 0;">Sistema de Gestión de Pedidos</p>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="color: #333; margin: 0;">FACTURA</h2>
+                    <p style="font-size: 18px; font-weight: bold; color: #dc3545; margin: 5px 0;"
+                        th:text="${factura.numeroFactura}"></p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4 style="color: #333; margin-bottom: 10px;">Información del Pedido</h4>
+                    <p style="margin: 5px 0;"><strong>Pedido:</strong> #<span
+                            th:text="${factura.pedido.idPedido}"></span></p>
+                    <p style="margin: 5px 0;"><strong>Cliente:</strong> <span
+                            th:text="${factura.pedido.usuario.nombreUsuario}"></span></p>
+                    <p style="margin: 5px 0;"><strong>Correo:</strong> <span
+                            th:text="${factura.pedido.usuario.correoUsuario}"></span></p>
+                </div>
+                <div style="text-align: right;">
+                    <h4 style="color: #333; margin-bottom: 10px;">Información de Factura</h4>
+                    <p style="margin: 5px 0;"><strong>Fecha Emisión:</strong> <span
+                            th:text="${#temporals.format(factura.fechaEmision, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <p style="margin: 5px 0;"><strong>Método de Pago:</strong> <span
+                            th:text="${factura.metodoPago != null ? factura.metodoPago.nombreMetodoPago : 'N/A'}"></span>
+                    </p>
+                    <p style="margin: 5px 0;"><strong>Estado Pedido:</strong> <span
+                            th:text="${factura.pedido.estadoPedido}"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalles de Factura -->
+        <div class="invoice-details">
+            <h3 style="color: #333; margin-bottom: 20px;">Detalle de Montos</h3>
+
+            <div style="border-top: 2px solid #e1e5e9; padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 16px;">
+                    <span><strong>Subtotal:</strong></span>
+                    <span th:text="'$' + ${#numbers.formatDecimal(factura.subtotal, 0, 'COMMA', 2, 'POINT')}"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 10px 0; font-size: 16px;">
+                    <span><strong>IVA (19%):</strong></span>
+                    <span th:text="'$' + ${#numbers.formatDecimal(factura.iva, 0, 'COMMA', 2, 'POINT')}"></span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 15px 0; font-size: 20px; border-top: 2px solid #dc3545; margin-top: 10px;">
+                    <span><strong>TOTAL:</strong></span>
+                    <span style="color: #dc3545; font-weight: bold;"
+                        th:text="'$' + ${#numbers.formatDecimal(factura.total, 0, 'COMMA', 2, 'POINT')}"></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 5px; text-align: center;">
+                <p style="color: #666; margin: 0;">Gracias por su compra en Shori Express</p>
+                <p style="color: #666; margin: 5px 0; font-size: 14px;">Esta es una factura electrónica válida</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 30px; justify-content: center;">
+                <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir Factura</button>
+                <a th:href="@{/facturas}" class="btn btn-secondary">← Volver a Facturas</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

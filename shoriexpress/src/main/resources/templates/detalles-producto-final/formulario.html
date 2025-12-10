@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto Final - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;"
+                        th:text="${detalleProductoFinal.idDetalleProductoFinal != null ? 'Editar Detalle' : 'Nuevo Detalle'}">
+                    </h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/detalles-producto-final}">← Volver a Detalles</a>
+                </div>
+            </div>
+        </nav>
+
+
+
+        <!-- Formulario -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;"
+                th:text="${detalleProductoFinal.idDetalleProductoFinal != null ? '✏️ Editar Detalle de Producto' : '➕ Agregar Materia Prima al Producto'}">
+            </h3>
+
+            <form
+                th:action="${detalleProductoFinal.idDetalleProductoFinal != null ? '/detalles-producto-final/editar/' + detalleProductoFinal.idDetalleProductoFinal : '/detalles-producto-final/nuevo'}"
+                th:object="${detalleProductoFinal}" method="post">
+
+                <!-- Mensajes de error -->
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="productoTerminado" class="form-label">Producto Terminado *</label>
+                    <select id="productoTerminado" th:field="*{productoTerminado}" class="form-select" required>
+                        <option value="">Seleccione un producto...</option>
+                        <option th:each="producto : ${productosTerminados}" th:value="${producto.idProductoTerminado}"
+                            th:text="${producto.nombreProductoTerminado}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="materiaPrima" class="form-label">Materia Prima *</label>
+                    <select id="materiaPrima" th:field="*{materiaPrima}" class="form-select" required>
+                        <option value="">Seleccione una materia prima...</option>
+                        <option th:each="materia : ${materiasPrimas}" th:value="${materia.idMateriaPrima}"
+                            th:text="${materia.nombreMateriaPrima + ' (' + materia.categoriaMateriaPrima + ')'}">
+                        </option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="cantidadUtilizada" class="form-label">Cantidad Utilizada *</label>
+                        <input type="number" id="cantidadUtilizada" th:field="*{cantidadUtilizada}" class="form-control"
+                            th:classappend="${#fields.hasErrors('cantidadUtilizada')} ? 'error' : ''" min="1"
+                            placeholder="0" required>
+                        <span th:if="${#fields.hasErrors('cantidadUtilizada')}" th:errors="*{cantidadUtilizada}"
+                            class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="unidadMedidaDeta" class="form-label">Unidad de Medida *</label>
+                        <select id="unidadMedidaDeta" th:field="*{unidadMedidaDeta}" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option th:each="unidad : ${unidadesMedida}" th:value="${unidad}" th:text="${unidad}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observacionesDetalle" class="form-label">Observaciones</label>
+                    <textarea id="observacionesDetalle" th:field="*{observacionesDetalle}" class="form-control" rows="3"
+                        placeholder="Observaciones adicionales sobre el uso de esta materia prima..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span
+                            th:text="${detalleProductoFinal.idDetalleProductoFinal != null ? '💾 Actualizar Detalle' : '➕ Agregar Detalle'}"></span>
+                    </button>
+                    <a th:href="@{/detalles-producto-final}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Información adicional -->
+        <div
+            style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
+            <h4 style="color: #856404; margin-bottom: 10px;">📝 Receta del Producto</h4>
+            <p style="color: #856404; line-height: 1.6; margin: 0;">
+                Este formulario permite definir qué materias primas se utilizan para elaborar cada producto terminado.
+                Especifique la cantidad exacta y la unidad de medida para mantener un control preciso del inventario.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

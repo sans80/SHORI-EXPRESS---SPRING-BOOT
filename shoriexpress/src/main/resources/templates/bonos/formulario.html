@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bono - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 700px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;" th:text="${bono.idBono != null ? 'Editar Bono' : 'Nuevo Bono'}">
+                    </h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/bonos}">← Volver a Bonos</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes de error -->
+
+
+        <!-- Formulario -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;"
+                th:text="${bono.idBono != null ? '✏️ Editar Bono' : '➕ Crear Nuevo Bono'}"></h3>
+
+            <form th:action="${bono.idBono != null ? '/bonos/editar/' + bono.idBono : '/bonos/nuevo'}"
+                th:object="${bono}" method="post">
+
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="usuario" class="form-label">Usuario *</label>
+                    <select id="usuario" th:field="*{usuario.idUsuario}" class="form-select" required>
+                        <option value="">Seleccione un usuario...</option>
+                        <option th:each="user : ${usuarios}" th:value="${user.idUsuario}"
+                            th:text="${user.nombreUsuario + ' (' + user.correoUsuario + ')'}"></option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="puntosAcumuladosBono" class="form-label">Puntos Acumulados *</label>
+                        <input type="number" id="puntosAcumuladosBono" th:field="*{puntosAcumuladosBono}"
+                            class="form-control"
+                            th:classappend="${#fields.hasErrors('puntosAcumuladosBono')} ? 'error' : ''" min="0"
+                            placeholder="0" required>
+                        <span th:if="${#fields.hasErrors('puntosAcumuladosBono')}" th:errors="*{puntosAcumuladosBono}"
+                            class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="puntosNecesariosBono" class="form-label">Puntos Necesarios *</label>
+                        <input type="number" id="puntosNecesariosBono" th:field="*{puntosNecesariosBono}"
+                            class="form-control"
+                            th:classappend="${#fields.hasErrors('puntosNecesariosBono')} ? 'error' : ''" min="1"
+                            placeholder="5" required>
+                        <span th:if="${#fields.hasErrors('puntosNecesariosBono')}" th:errors="*{puntosNecesariosBono}"
+                            class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="estadoBono" class="form-label">Estado del Bono *</label>
+                    <select id="estadoBono" th:field="*{estadoBono}" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        <option th:each="estado : ${estados}" th:value="${estado}" th:text="${estado}"></option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${bono.idBono != null ? '💾 Actualizar Bono' : '➕ Crear Bono'}"></span>
+                    </button>
+                    <a th:href="@{/bonos}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Información adicional -->
+        <div
+            style="margin-top: 20px; padding: 20px; background: #fff3cd; border-radius: 10px; border-left: 4px solid #ffc107;">
+            <h4 style="color: #856404; margin-bottom: 10px;">⭐ Sistema de Bonos</h4>
+            <ul style="color: #856404; line-height: 1.6; margin: 0;">
+                <li>Los puntos se acumulan con cada compra realizada</li>
+                <li>Cuando los puntos acumulados alcanzan los puntos necesarios, el bono está disponible</li>
+                <li>Los bonos disponibles pueden ser redimidos por descuentos o productos</li>
+                <li>El estado por defecto es "no disponible" hasta alcanzar los puntos necesarios</li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>

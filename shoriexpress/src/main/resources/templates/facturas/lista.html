@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturas - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Facturas</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/pedidos}">🛒 Pedidos</a>
+                    <a th:href="@{/metodos-pago}">💳 Métodos de Pago</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">🧾 Facturas</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/facturas/nuevo}" class="btn-add">➕ Nueva Factura</a>
+                </div>
+            </div>
+
+            <!-- Tabla de facturas -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Número</th>
+                            <th>Fecha Emisión</th>
+                            <th>Pedido</th>
+                            <th>Subtotal</th>
+                            <th>IVA</th>
+                            <th>Total</th>
+                            <th>Método Pago</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="factura : ${facturas}">
+                            <td th:text="${factura.idFactura}"></td>
+                            <td><strong th:text="${factura.numeroFactura}"></strong></td>
+                            <td th:text="${#temporals.format(factura.fechaEmision, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td th:text="'Pedido #' + ${factura.pedido.idPedido}"></td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(factura.subtotal, 0, 'COMMA', 2, 'POINT')}">
+                            </td>
+                            <td th:text="'$' + ${#numbers.formatDecimal(factura.iva, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td><strong
+                                    th:text="'$' + ${#numbers.formatDecimal(factura.total, 0, 'COMMA', 2, 'POINT')}"></strong>
+                            </td>
+                            <td th:text="${factura.metodoPago != null ? factura.metodoPago.nombreMetodoPago : 'N/A'}">
+                            </td>
+                            <td>
+                                <a th:href="@{/facturas/ver/{id}(id=${factura.idFactura})}" class="btn-edit">👁️ Ver</a>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/facturas/editar/{id}(id=${factura.idFactura})}" class="btn-edit">✏️
+                                        Editar</a>
+                                    <form th:action="@{/facturas/eliminar/{id}(id=${factura.idFactura})}" method="post"
+                                        style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar esta factura?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(facturas)}">
+                            <td colspan="9" style="text-align: center; color: #666; padding: 30px;">
+                                🧾 No se encontraron facturas
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

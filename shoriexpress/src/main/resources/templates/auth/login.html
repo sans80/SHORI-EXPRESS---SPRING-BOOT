@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+</head>
+<style>
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    body {
+        background: #f8f9fa;
+        padding-top: 70px;
+        /* Espacio para la barra de navegación fija */
+    }
+
+    /* Contenedor Principal (Centra el contenido) */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* 1. Navegación Profesional */
+    .navbar {
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        /* Fija la barra en la parte superior */
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .navbar-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px 20px;
+    }
+
+    .logo-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo-group .logo-circle {
+        width: 40px;
+        /* Reducido para un aspecto más profesional */
+        height: 40px;
+        background: linear-gradient(45deg, #dc3545, #000000);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        font-size: 16px;
+    }
+
+    .logo-group .logo-circle img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .logo-group h2 {
+        color: #333;
+        margin: 0;
+        font-size: 20px;
+    }
+
+    .logo-group small {
+        color: #666;
+        font-size: 12px;
+        display: block;
+        /* Asegura que esté debajo del título */
+    }
+
+    .nav-links a {
+        color: #dc3545;
+        /* Enlaces en el color principal */
+        text-decoration: none;
+        margin-left: 15px;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+        color: #c82333;
+    }
+
+    .nav-links .user-greeting {
+        color: #666;
+        margin-right: 15px;
+    }
+
+    /* 2. Estilos de Tarjetas (Dashboard Card y Stat Card) */
+    .dashboard-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        /* Sombra más sutil */
+        margin-bottom: 25px;
+        /* Espacio entre tarjetas */
+    }
+
+    .welcome-card {
+        /* Estilo específico para la tarjeta de bienvenida */
+        border-left: 5px solid #000000;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        /* Columnas más flexibles */
+        gap: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        /* Sombra ligera */
+        border-left: 4px solid #dc3545;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        /* Para el icono flotante */
+        position: relative;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(220, 53, 69, 0.1);
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #dc3545;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .stat-icon {
+        font-size: 60px;
+        /* Icono más grande y menos opaco */
+        color: #dc3545;
+        opacity: 0.1;
+        position: absolute;
+        bottom: -10px;
+        right: 10px;
+        pointer-events: none;
+        /* No interactivo */
+    }
+
+    /* 3. Acciones Rápidas */
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .action-btn {
+        background: linear-gradient(45deg, #dc3545, #000000);
+        color: white;
+        padding: 15px;
+        /* Reducido para mejor balance */
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.03);
+        /* Zoom sutil */
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+    }
+
+    /* 4. Información del Sistema */
+    .system-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        padding-top: 10px;
+    }
+
+    .info-item {
+        padding: 10px 15px;
+        background: #f1f1f1;
+        /* Fondo ligeramente más oscuro */
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .info-item strong {
+        color: #333;
+        font-size: 13px;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .info-item span {
+        color: #444;
+    }
+
+    /* Mensajes de Alerta (Manteniendo la estructura básica) */
+    .alert {
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <div class="card auth-card">
+            <!-- Logo y título -->
+            <div class="logo-container">
+                <div class="logo-placeholder" style="background: #dc3545;">
+                    <img th:src="@{/img/SHORIp.png}" alt="Shori Express Logo ">
+
+                </div>
+                <h1 class="app-title">Shori Express</h1>
+                <p class="app-subtitle">Sistema de Gestión Empresarial</p>
+            </div>
+
+            <!-- Mensajes de alerta -->
+            <div th:if="${mensaje}" class="alert alert-success"
+                th:classappend="${tipoMensaje == 'info'} ? 'alert-info' : ''">
+                <span th:text="${mensaje}"></span>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger">
+                <span th:text="${error}"></span>
+            </div>
+
+            <!-- Formulario de login -->
+            <form th:action="@{/auth/login}" method="post" id="loginForm">
+                <div class="form-group">
+                    <label for="correo" class="form-label">Correo Electrónico</label>
+                    <input type="email" id="correo" name="correo" class="form-control" placeholder="ejemplo@correo.com"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="contraseña" class="form-label">Contraseña</label>
+                    <input type="password" id="contraseña" name="contraseña" class="form-control" placeholder="••••••••"
+                        required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="loginBtn" style="background: #dc3545;">
+                    <span class="btn-text">Iniciar Sesión</span>
+                </button>
+            </form>
+
+            <!-- Enlaces adicionales -->
+            <div class="auth-links">
+                <p>¿No tienes cuenta? <a th:href="@{/auth/register}" style="color: #dc3545;">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/auth.js}"></script>
+</body>
+
+</html>

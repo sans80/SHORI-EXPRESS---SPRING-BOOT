@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Shori Express</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .register-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .register-body {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h2><i class="fas fa-user-plus"></i> Registro</h2>
+                <p class="mb-0">Crea tu cuenta en Shori Express</p>
+            </div>
+
+            <div class="register-body">
+                <!-- Mostrar mensajes de error -->
+                <div th:if="${error}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span th:text="${error}"></span>
+                </div>
+
+                <!-- Mostrar mensajes de éxito -->
+                <div th:if="${mensaje}" class="alert alert-success" role="alert">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${mensaje}"></span>
+                </div>
+
+                <form th:action="@{/auth/register}" method="post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nombreUsuario" class="form-label">
+                                    <i class="fas fa-user"></i> Nombre de Usuario *
+                                </label>
+                                <input type="text" class="form-control" id="nombreUsuario" name="nombreUsuario"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="correoUsuario" class="form-label">
+                                    <i class="fas fa-envelope"></i> Correo Electrónico *
+                                </label>
+                                <input type="email" class="form-control" id="correoUsuario" name="correoUsuario"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contraseñaUsuario" class="form-label">
+                            <i class="fas fa-lock"></i> Contraseña *
+                        </label>
+                        <input type="password" class="form-control" id="contraseñaUsuario" name="contraseñaUsuario"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nombreCompleto" class="form-label">
+                            <i class="fas fa-id-card"></i> Nombre Completo
+                        </label>
+                        <input type="text" class="form-control" id="nombreCompleto" name="nombreCompleto">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="tipoDocumentoUsuario" class="form-label">
+                                    <i class="fas fa-id-badge"></i> Tipo de Documento
+                                </label>
+                                <select class="form-control" id="tipoDocumentoUsuario" name="tipoDocumentoUsuario">
+                                    <option value="CC">Cédula de Ciudadanía</option>
+                                    <option value="TI">Tarjeta de Identidad</option>
+                                    <option value="CE">Cédula de Extranjería</option>
+                                    <option value="PP">Pasaporte</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="documentoUsuario" class="form-label">
+                                    <i class="fas fa-hashtag"></i> Número de Documento
+                                </label>
+                                <input type="text" class="form-control" id="documentoUsuario" name="documentoUsuario">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="telefonoUsuario" class="form-label">
+                                    <i class="fas fa-phone"></i> Teléfono
+                                </label>
+                                <input type="tel" class="form-control" id="telefonoUsuario" name="telefonoUsuario">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="direccionUsuario" class="form-label">
+                                    <i class="fas fa-map-marker-alt"></i> Dirección
+                                </label>
+                                <input type="text" class="form-control" id="direccionUsuario" name="direccionUsuario">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-register">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </button>
+                </form>
+
+                <div class="login-link">
+                    <p>¿Ya tienes una cuenta? <a th:href="@{/auth/login}">Inicia sesión aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

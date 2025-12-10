@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrada de Inventario - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 700px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;"
+                        th:text="${entradaInventario.idEntrada != null ? 'Editar Entrada' : 'Nueva Entrada'}"></h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/entradas-inventario}">← Volver a Entradas</a>
+                </div>
+            </div>
+        </nav>
+
+
+
+        <!-- Formulario -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;"
+                th:text="${entradaInventario.idEntrada != null ? '✏️ Editar Entrada de Inventario' : '➕ Registrar Nueva Entrada'}">
+            </h3>
+
+            <form
+                th:action="${entradaInventario.idEntrada != null ? '/entradas-inventario/editar/' + entradaInventario.idEntrada : '/entradas-inventario/nuevo'}"
+                th:object="${entradaInventario}" method="post">
+
+                <!-- Mensajes de error -->
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+
+                <div class="form-group">
+                    <label for="materiaPrima" class="form-label">Materia Prima *</label>
+                    <select id="materiaPrima" th:field="*{materiaPrima.idMateriaPrima}" class="form-select" required>
+                        class="form-select"
+                        required>
+                        <option value="">Seleccione una materia prima...</option>
+                        <option th:each="materia : ${materiasPrimas}" th:value="${materia.idMateriaPrima}"
+                            th:text="${materia.nombreMateriaPrima + ' (' + materia.categoriaMateriaPrima + ')'}">
+                        </option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="cantidadEntrada" class="form-label">Cantidad *</label>
+                        <input type="number" id="cantidadEntrada" th:field="*{cantidadEntrada}" class="form-control"
+                            th:classappend="${#fields.hasErrors('cantidadEntrada')} ? 'error' : ''" min="1"
+                            placeholder="0" required>
+                        <span th:if="${#fields.hasErrors('cantidadEntrada')}" th:errors="*{cantidadEntrada}"
+                            class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precioUnitario" class="form-label">Precio Unitario *</label>
+                        <input type="number" id="precioUnitario" th:field="*{precioUnitario}" class="form-control"
+                            th:classappend="${#fields.hasErrors('precioUnitario')} ? 'error' : ''" step="0.01"
+                            min="0.01" placeholder="0.00" required>
+                        <span th:if="${#fields.hasErrors('precioUnitario')}" th:errors="*{precioUnitario}"
+                            class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipoEntrada" class="form-label">Tipo de Entrada *</label>
+                    <select id="tipoEntrada" th:field="*{tipoEntrada}" class="form-select" required>
+                        <option value="">Seleccione...</option>
+                        <option th:each="tipo : ${tiposEntrada}" th:value="${tipo}" th:text="${tipo}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcionEntrada" class="form-label">Descripción *</label>
+                    <textarea id="descripcionEntrada" th:field="*{descripcionEntrada}" class="form-control"
+                        th:classappend="${#fields.hasErrors('descripcionEntrada')} ? 'error' : ''" rows="3"
+                        placeholder="Descripción de la entrada de inventario..." required></textarea>
+                    <span th:if="${#fields.hasErrors('descripcionEntrada')}" th:errors="*{descripcionEntrada}"
+                        class="error-message"></span>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span
+                            th:text="${entradaInventario.idEntrada != null ? '💾 Actualizar Entrada' : '➕ Registrar Entrada'}"></span>
+                    </button>
+                    <a th:href="@{/entradas-inventario}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

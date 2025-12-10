@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+
+    <style>
+        /* Estilos Base/Resets */
+        body {
+            background: #f8f9fa;
+            padding-top: 70px;
+            /* Espacio para la barra de navegación fija */
+        }
+
+        /* Contenedor Principal (Centra el contenido) */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 1. Navegación Profesional */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            /* Fija la barra en la parte superior */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 20px;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-group .logo-circle {
+            width: 40px;
+            /* Reducido para un aspecto más profesional */
+            height: 40px;
+            background: linear-gradient(45deg, #dc3545, #000000);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .logo-group .logo-circle img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .logo-group h2 {
+            color: #333;
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .logo-group small {
+            color: #666;
+            font-size: 12px;
+            display: block;
+            /* Asegura que esté debajo del título */
+        }
+
+        .nav-links a {
+            color: #dc3545;
+            /* Enlaces en el color principal */
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #c82333;
+        }
+
+        .nav-links .user-greeting {
+            color: #666;
+            margin-right: 15px;
+        }
+
+        /* 2. Estilos de Tarjetas (Dashboard Card y Stat Card) */
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            /* Sombra más sutil */
+            margin-bottom: 25px;
+            /* Espacio entre tarjetas */
+        }
+
+        .welcome-card {
+            /* Estilo específico para la tarjeta de bienvenida */
+            border-left: 5px solid #000000;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            /* Columnas más flexibles */
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            /* Sombra ligera */
+            border-left: 4px solid #dc3545;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            /* Para el icono flotante */
+            position: relative;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(220, 53, 69, 0.1);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #dc3545;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat-icon {
+            font-size: 60px;
+            /* Icono más grande y menos opaco */
+            color: #dc3545;
+            opacity: 0.1;
+            position: absolute;
+            bottom: -10px;
+            right: 10px;
+            pointer-events: none;
+            /* No interactivo */
+        }
+
+        /* 3. Acciones Rápidas */
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #dc3545, #000000);
+            color: white;
+            padding: 15px;
+            /* Reducido para mejor balance */
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.03);
+            /* Zoom sutil */
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        /* 4. Información del Sistema */
+        .system-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding-top: 10px;
+        }
+
+        .info-item {
+            padding: 10px 15px;
+            background: #f1f1f1;
+            /* Fondo ligeramente más oscuro */
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .info-item strong {
+            color: #333;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .info-item span {
+            color: #444;
+        }
+
+        /* Mensajes de Alerta (Manteniendo la estructura básica) */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo-group">
+                <div class="logo-circle">
+                    <img th:src="@{/img/SHORIp.png}" alt="Shori Express Logo">
+                </div>
+                <div>
+                    <h2>Shori Express</h2>
+                    <small>Dashboard Principal</small>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <span class="user-greeting">Bienvenido, <strong th:text="${session.nombreCompleto}"></strong></span>
+                <a th:href="@{/usuarios/perfil}">👤 Mi Perfil</a>
+                <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr; margin-bottom: 25px;">
+            <div class="dashboard-card welcome-card">
+                <h1 style="color: #333; margin-bottom: 10px; font-size: 28px;">
+                    🏠 Bienvenido al Dashboard de Shori Express
+                </h1>
+                <p style="color: #666; font-size: 16px; line-height: 1.5;">
+                    Sistema de gestión integral para restaurantes. Utiliza este panel central para gestionar usuarios,
+                    productos, bonos y redenciones de manera eficiente.
+                </p>
+            </div>
+
+            <div class="dashboard-card" style="border-left: 5px solid #dc3545;">
+                <h3 style="color: #333; margin-bottom: 15px;">👤 Tu Cuenta</h3>
+                <div class="info-item" style="background: none; padding: 5px 0;">
+                    <strong>Rol:</strong>
+                    <span th:text="${session.rol}"
+                        style="text-transform: capitalize; font-weight: bold; color: #dc3545;"></span>
+                </div>
+                <div class="info-item" style="background: none; padding: 5px 0;">
+                    <strong>Última Conexión:</strong>
+                    <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy HH:mm')}"
+                        style="color: #444;"></span>
+                </div>
+                <a th:href="@{/usuarios/perfil}" class="action-btn"
+                    style="background: #000000; margin-top: 15px; padding: 10px;">Ver mi Perfil Completo</a>
+            </div>
+        </div>
+
+        <div th:if="${session.rol == 'admin'}">
+            <h3 style="color: #333; margin-bottom: 15px;">📊 Resumen de Estadísticas</h3>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Usuarios Registrados</div>
+                    <div class="stat-icon">👥</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Productos Disponibles</div>
+                    <div class="stat-icon">📦</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Bonos Activos</div>
+                    <div class="stat-icon">🎁</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Redenciones del Mes</div>
+                    <div class="stat-icon">💰</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-card" style="margin-top: 25px;">
+            <h3 style="color: #333; margin-bottom: 20px;">⚡ Accesos Directos</h3>
+
+            <div class="quick-actions-grid">
+                <a th:href="@{/productos}" class="action-btn" style="background: #dc3545;">
+                    📦 Ver Productos
+                </a>
+
+                <a th:href="@{/redenciones}" class="action-btn" style="background: #dc3545;">
+                    🎁 Mis Redenciones
+                </a>
+
+                <a th:href="@{/usuarios/editar-perfil}" class="action-btn" style="background: #dc3545;">
+                    ✏️ Editar Perfil
+                </a>
+
+                <a th:href="@{/usuarios/cambiar-contraseña}" class="action-btn" style="background: #dc3545;">
+                    🔒 Cambiar Contraseña
+                </a>
+
+                <div th:if="${session.rol == 'admin'}" style="display: contents;">
+                    <a th:href="@{/usuarios}" class="action-btn" style="background: #dc3545;">
+                        👥 Gestionar Usuarios
+                    </a>
+
+                    <a th:href="@{/productos/nuevo}" class="action-btn" style="background: #dc3545;">
+                        ➕ Nuevo Producto
+                    </a>
+
+                    <a th:href="@{/roles}" class="action-btn" style="background: #dc3545;">
+                        🏷️ Gestionar Roles
+                    </a>
+
+                    <a th:href="@{/bonos}" class="action-btn" style="background: #dc3545;">
+                        🎯 Gestionar Bonos
+                    </a>
+
+                    <a th:href="@{/detalles-pedido}" class="action-btn" style="background: #dc3545;">
+                        📃 Gestionar Detalle Pedido
+                    </a>
+
+                    <a th:href="@{/detalles-producto-final}" class="action-btn" style="background: #dc3545;">
+                        🔚 Gestionar Detalle Producto Final
+                    </a>
+
+                    <a th:href="@{/entradas-inventario}" class="action-btn" style="background: #dc3545;">
+                        📦 Gestionar Entrada Inventario
+                    </a>
+
+                    <a th:href="@{/facturas}" class="action-btn" style="background: #dc3545;">
+                        📋 Gestionar Facturas
+                    </a>
+
+                    <a th:href="@{/materias-primas}" class="action-btn" style="background: #dc3545;">
+                        🍔 Gestionar Materias Primas
+                    </a>
+
+                    <a th:href="@{/metodos-pago}" class="action-btn" style="background: #dc3545;">
+                        💳 Gestionar Metodos Pago
+                    </a>
+
+                    <a th:href="@{/pedidos}" class="action-btn" style="background: #dc3545;">
+                        💻 Gestionar Pedidos
+                    </a>
+
+                    <a th:href="@{/pedidos}" class="action-btn" style="background: #dc3545;">
+                        🥚 Gestionar Productos
+                    </a>
+
+                    <a th:href="@{/redenciones}" class="action-btn" style="background: #dc3545;">
+                        🧾 Gestionar Redenciones
+                    </a>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

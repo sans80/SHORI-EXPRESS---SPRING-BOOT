@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Gestión de Productos</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/dashboard}">🏠 Dashboard</a>
+                    <a th:href="@{/usuarios}">👥 Usuarios</a>
+                    <a th:href="@{/redenciones}">🎁 Redenciones</a>
+                    <a th:href="@{/auth/logout}">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Contenedor principal -->
+        <div class="crud-container">
+            <div class="crud-header">
+                <h1 class="crud-title">📦 Productos Terminados</h1>
+                <div th:if="${esAdmin}">
+                    <a th:href="@{/productos/nuevo}" class="btn-add">➕ Nuevo Producto</a>
+                </div>
+            </div>
+
+            <!-- Formulario de búsqueda -->
+            <div class="search-form">
+                <h4 style="margin-bottom: 15px;">🔍 Buscar Productos</h4>
+                <form th:action="@{/productos/buscar}" method="get">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; align-items: end;">
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Producto</label>
+                            <input type="text" name="nombre" th:value="${nombre}" class="form-control"
+                                placeholder="Buscar por nombre...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Precio Mínimo</label>
+                            <input type="number" name="precioMin" th:value="${precioMin}" class="form-control"
+                                placeholder="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Precio Máximo</label>
+                            <input type="number" name="precioMax" th:value="${precioMax}" class="form-control"
+                                placeholder="999999" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn-search">🔍 Buscar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div style="overflow-x: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Cantidad</th>
+                            <th>Stock</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="producto : ${productos}">
+                            <td th:text="${producto.idProductoTerminado}"></td>
+                            <td th:text="${producto.nombreProductoTerminado}"></td>
+                            <td th:text="${producto.descripcionProductoTerminado}"></td>
+                            <td th:text="${producto.cantidadProductoTerminado}"></td>
+                            <td>
+                                <span
+                                    th:class="${producto.stockProductoTerminado > 0} ? 'status-active' : 'status-inactive'"
+                                    th:text="${producto.stockProductoTerminado}"></span>
+                            </td>
+                            <td
+                                th:text="'$' + ${#numbers.formatDecimal(producto.precioVentaProductoTerminado, 0, 'COMMA', 2, 'POINT')}">
+                            </td>
+                            <td>
+                                <a th:href="@{/productos/detalle/{id}(id=${producto.idProductoTerminado})}"
+                                    class="btn-edit">👁️ Ver</a>
+                                <div th:if="${esAdmin}" style="display: inline;">
+                                    <a th:href="@{/productos/editar/{id}(id=${producto.idProductoTerminado})}"
+                                        class="btn-edit">✏️ Editar</a>
+                                    <form th:action="@{/productos/eliminar/{id}(id=${producto.idProductoTerminado})}"
+                                        method="post" style="display: inline;"
+                                        onsubmit="return confirm('¿Está seguro de eliminar este producto?')">
+                                        <button type="submit" class="btn-delete">🗑️ Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="7" style="text-align: center; color: #666; padding: 30px;">
+                                📦 No se encontraron productos
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

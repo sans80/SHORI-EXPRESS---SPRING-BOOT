@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .password-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="password-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 500px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;">Cambiar Contraseña</h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/usuarios/perfil}">← Volver al Perfil</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mensajes -->
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Formulario de cambio de contraseña -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;">🔒 Cambiar Contraseña</h3>
+
+            <div
+                style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #2196f3;">
+                <p style="margin: 0; color: #1976d2; font-size: 14px;">
+                    <strong>Importante:</strong> Tu nueva contraseña debe tener al menos 6 caracteres.
+                    Se recomienda usar una combinación de letras, números y símbolos para mayor seguridad.
+                </p>
+            </div>
+
+            <form th:action="@{/usuarios/cambiar-contraseña}" method="post" id="changePasswordForm">
+                <div class="form-group">
+                    <label for="contraseñaActual" class="form-label">Contraseña Actual *</label>
+                    <input type="password" id="contraseñaActual" name="contraseñaActual" class="form-control"
+                        placeholder="••••••••" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nuevaContraseña" class="form-label">Nueva Contraseña *</label>
+                    <input type="password" id="nuevaContraseña" name="nuevaContraseña" class="form-control"
+                        placeholder="••••••••" minlength="6" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmarContraseña" class="form-label">Confirmar Nueva Contraseña *</label>
+                    <input type="password" id="confirmarContraseña" name="confirmarContraseña" class="form-control"
+                        placeholder="••••••••" minlength="6" required>
+                    <span id="passwordMatch" style="font-size: 14px; margin-top: 5px; display: block;"></span>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+                        🔒 Cambiar Contraseña
+                    </button>
+                    <a th:href="@{/usuarios/perfil}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const nuevaPassword = document.getElementById('nuevaContraseña');
+            const confirmarPassword = document.getElementById('confirmarContraseña');
+            const matchSpan = document.getElementById('passwordMatch');
+            const form = document.getElementById('changePasswordForm');
+            const submitBtn = document.getElementById('changePasswordBtn');
+
+            function validarCoincidencia() {
+                const nueva = nuevaPassword.value;
+                const confirmar = confirmarPassword.value;
+
+                if (confirmar.length === 0) {
+                    matchSpan.textContent = '';
+                    matchSpan.style.color = '';
+                    return;
+                }
+
+                if (nueva === confirmar) {
+                    matchSpan.textContent = '✓ Las contraseñas coinciden';
+                    matchSpan.style.color = '#28a745';
+                    confirmarPassword.classList.remove('error');
+                } else {
+                    matchSpan.textContent = '✗ Las contraseñas no coinciden';
+                    matchSpan.style.color = '#dc3545';
+                    confirmarPassword.classList.add('error');
+                }
+            }
+
+            nuevaPassword.addEventListener('input', validarCoincidencia);
+            confirmarPassword.addEventListener('input', validarCoincidencia);
+
+            // Validar fortaleza de contraseña
+            nuevaPassword.addEventListener('input', function () {
+                const password = this.value;
+                let existingStrength = this.parentNode.querySelector('.password-strength');
+
+                if (existingStrength) {
+                    existingStrength.remove();
+                }
+
+                if (password.length === 0) return;
+
+                const strengthDiv = document.createElement('div');
+                strengthDiv.className = 'password-strength';
+                strengthDiv.style.fontSize = '12px';
+                strengthDiv.style.marginTop = '5px';
+
+                let strength = 0;
+                let feedback = [];
+
+                if (password.length >= 6) strength++;
+                else feedback.push('Al menos 6 caracteres');
+
+                if (/[A-Z]/.test(password)) strength++;
+                else feedback.push('Una mayúscula');
+
+                if (/[a-z]/.test(password)) strength++;
+                else feedback.push('Una minúscula');
+
+                if (/[0-9]/.test(password)) strength++;
+                else feedback.push('Un número');
+
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                else feedback.push('Un carácter especial');
+
+                const colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#198754'];
+                const labels = ['Muy débil', 'Débil', 'Regular', 'Fuerte', 'Muy fuerte'];
+
+                strengthDiv.style.color = colors[strength - 1] || colors[0];
+                strengthDiv.innerHTML = `
+                    <div>Fortaleza: ${labels[strength - 1] || labels[0]}</div>
+                    ${feedback.length > 0 ? `<div style="font-size: 11px; opacity: 0.8;">Falta: ${feedback.join(', ')}</div>` : ''}
+                `;
+
+                this.parentNode.appendChild(strengthDiv);
+            });
+
+            form.addEventListener('submit', function (e) {
+                const nueva = nuevaPassword.value;
+                const confirmar = confirmarPassword.value;
+
+                if (nueva !== confirmar) {
+                    e.preventDefault();
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+
+                if (nueva.length < 6) {
+                    e.preventDefault();
+                    alert('La nueva contraseña debe tener al menos 6 caracteres');
+                    return;
+                }
+
+                // Mostrar estado de carga
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner"></span> Cambiando contraseña...';
+            });
+        });
+    </script>
+</body>
+
+</html>

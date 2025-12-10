@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura - Shori Express</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+    <style>
+        body {
+            background: #f8f9fa;
+            align-items: flex-start;
+            padding-top: 0;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <!-- Navegación -->
+        <nav class="navbar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto; padding: 0 20px;">
+                <div style="display: flex; align-items: center;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #dc3545, #000000); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        SE
+                    </div>
+                    <h2 style="color: #333; margin: 0;"
+                        th:text="${factura.idFactura != null ? 'Editar Factura' : 'Nueva Factura'}"></h2>
+                </div>
+
+                <div class="nav-links">
+                    <a th:href="@{/facturas}">← Volver a Facturas</a>
+                </div>
+            </div>
+        </nav>
+
+
+        <!-- Formulario -->
+        <div class="dashboard-card">
+            <h3 style="color: #333; margin-bottom: 25px;"
+                th:text="${factura.idFactura != null ? '✏️ Editar Factura' : '➕ Crear Nueva Factura'}"></h3>
+
+            <form th:action="${factura.idFactura != null ? '/facturas/editar/' + factura.idFactura : '/facturas/nuevo'}"
+                th:object="${factura}" method="post">
+                <!-- Mensajes de error -->
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li th:each="error : ${#fields.allErrors()}" th:text="${error}"></li>
+                    </ul>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="numeroFactura" class="form-label">Número de Factura *</label>
+                    <input type="text" id="numeroFactura" th:field="*{numeroFactura}" class="form-control"
+                        th:classappend="${#fields.hasErrors('numeroFactura')} ? 'error' : ''"
+                        placeholder="Ej: FAC-2024-001" required>
+                    <span th:if="${#fields.hasErrors('numeroFactura')}" th:errors="*{numeroFactura}"
+                        class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="pedido" class="form-label">Pedido *</label>
+                    <select id="pedido" th:field="*{pedido.idPedido}" class="form-select" required>
+                        <option value="">Seleccione un pedido...</option>
+                        <option th:each="ped : ${pedidos}" th:value="${ped.idPedido}"
+                            th:text="'Pedido #' + ${ped.idPedido} + ' - ' + ${ped.descripcionPedido} + ' ($' + ${#numbers.formatDecimal(ped.totalPedido, 0, 'COMMA', 2, 'POINT')} + ')'"
+                            th:selected="${factura.pedido != null AND factura.pedido.idPedido == ped.idPedido}">
+                        </option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="subtotal" class="form-label">Subtotal *</label>
+                        <input type="number" id="subtotal" th:field="*{subtotal}" class="form-control"
+                            th:classappend="${#fields.hasErrors('subtotal')} ? 'error' : ''" step="0.01" min="0"
+                            placeholder="0.00" required>
+                        <span th:if="${#fields.hasErrors('subtotal')}" th:errors="*{subtotal}"
+                            class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="iva" class="form-label">IVA *</label>
+                        <input type="number" id="iva" th:field="*{iva}" class="form-control"
+                            th:classappend="${#fields.hasErrors('iva')} ? 'error' : ''" step="0.01" min="0"
+                            placeholder="0.00" required>
+                        <span th:if="${#fields.hasErrors('iva')}" th:errors="*{iva}" class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="total" class="form-label">Total *</label>
+                        <input type="number" id="total" th:field="*{total}" class="form-control"
+                            th:classappend="${#fields.hasErrors('total')} ? 'error' : ''" step="0.01" min="0"
+                            placeholder="0.00" required>
+                        <span th:if="${#fields.hasErrors('total')}" th:errors="*{total}" class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="metodoPago" class="form-label">Método de Pago</label>
+                    <select id="metodoPago" th:field="*{metodoPago.idMetodoPago}" class="form-select">
+                        <option value="">Seleccione un método de pago...</option>
+                        <option th:each="metodo : ${metodosPago}" th:value="${metodo.idMetodoPago}"
+                            th:text="${metodo.nombreMetodoPago}"
+                            th:selected="${factura.metodoPago != null AND factura.metodoPago.idMetodoPago == metodo.idMetodoPago}">
+                        </option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span
+                            th:text="${factura.idFactura != null ? '💾 Actualizar Factura' : '➕ Crear Factura'}"></span>
+                    </button>
+                    <a th:href="@{/facturas}" class="btn btn-secondary">
+                        ❌ Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
